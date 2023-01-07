@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CropClass { None, Vegetable }//, Any }
-public enum CropType { None, Carrot }
+public enum CropClass { None, Vegetable, Fruit, Seed, Meat }
 public class Crop : Card
 {
     [Header("Crop Stats")]
-    [SerializeField] public List<ProducedCrop> producedCrops = new List<ProducedCrop>();
+    public List<CropClass> producedCrops = new List<CropClass>();
+    protected int cropBoost = 1;
 
     protected override void OnValidate()
     {
@@ -16,15 +16,19 @@ public class Crop : Card
         CardType = CardType.Crop;
     }
 
-    public virtual ProducedCrop[] HarvestCrop()
+    public virtual CropClass[] HarvestCrop()
     {
-        return producedCrops.ToArray();
-    }
-}
+        CropClass[] ret = new CropClass[producedCrops.Count * cropBoost];
 
-[System.Serializable]
-public class ProducedCrop
-{
-    public CropType cropType;
-    public CropClass cropClass;
+        for (int i = 0; i < cropBoost; i++)
+            producedCrops.CopyTo(ret, producedCrops.Count * i);
+
+        cropBoost = 1;
+        return ret;
+    }
+
+    public void BoostCrop(int modifier)
+    {
+        cropBoost *= modifier;
+    }
 }

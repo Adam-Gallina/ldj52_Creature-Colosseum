@@ -6,6 +6,6 @@ public class Draw3 : Charm
 {
     public override void UseCharm()
     {
-        Debug.Log("Used charm");
+        GameController.Instance.GetPlayer(Player).DrawCard(3);
     }
 }

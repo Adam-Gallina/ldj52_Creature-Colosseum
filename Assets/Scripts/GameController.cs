@@ -18,20 +18,20 @@ public class GameController : MonoBehaviour
     public static int MaxLife = 10;
     public static int StartCards = 5;
     public static int MaxCropPerZone = 3;
+    public static float AttackAnimTime = 0.5f;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    void Start()
-    {
-        StartGame();
-    }
-
     public PlayerController GetPlayer(PlayerNumber p)
     {
         return p == PlayerNumber.P1 ? P1 : P2;
+    }
+    public PlayerController GetOpponent(PlayerNumber p)
+    {
+        return p == PlayerNumber.P1 ? P2 : P1;
     }
 
     public void StartGame()
@@ -39,8 +39,8 @@ public class GameController : MonoBehaviour
         P1.CurrLife = MaxLife;
         P2.CurrLife = MaxLife;
 
-        P1.DrawCard(StartCards);
-        P2.DrawCard(StartCards);
+        P1.DrawCard(StartCards, false);
+        P2.DrawCard(StartCards, false);
         CurrPlayer = PlayerNumber.P1;
 
         StartCoroutine(GameLoop());
@@ -66,12 +66,12 @@ public class GameController : MonoBehaviour
         int round = 0;
         while (!CheckWin())
         {
-            BoardField currField = GameBoard.Instance.GetPlayerField(CurrPlayer);
+            BoardField currField = GetPlayer(CurrPlayer).Board;
             //currField.DoTurnStart();
 
             yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Turn", 0.5f);
 
-            GetCurrPlayer().DrawCard(1);
+            yield return GetCurrPlayer().DrawCard(1);
             CanPlayCards = true;
             turnEnded = false;
 
@@ -80,25 +80,23 @@ public class GameController : MonoBehaviour
             CanPlayCards = false;
 
             yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Harvest", 0.5f);
-
             currField.DoHarvest();
 
             yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Feast", 0.5f);
-
             // Cast Charms
             currField.DoCharms();
 
             // Feed Creatures
             currField.DoHunger();
 
-            yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Attack", 0.5f);
-
             // Do Attacks
             if (round != 0)// || CurrPlayer != PlayerNumber.P1)
             {
-                currField.DoCombat();
+                yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Attack", 0.5f);
+                yield return currField.Combat();
             }
 
+            yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Turn", 0);
             currField.CheckStarve();
 
             currField.RemoveSurplus();

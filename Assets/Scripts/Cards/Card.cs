@@ -7,16 +7,18 @@ using TMPro;
 public enum CardType { Charm, Creature, Crop }
 public abstract class Card : MonoBehaviour
 {
+    public PlayerNumber Player;
+
     [Header("Stats")]
     public CardType CardType;
     public string CardName;
     public CropClass[] CropClassCost;
-    //public CropType[] CropTypeCost;
     public string Description;
     public int BaseStrength;
     public int Strength;
     public int BaseHealth;
     public int Health;
+    public int Lane;
 
     public bool Fed = false;
 
@@ -32,14 +34,12 @@ public abstract class Card : MonoBehaviour
     public event Action<Card> OnHoverEnd;
     public event Action<Card> OnDeath;
 
-    protected CardPlacementZone placedZone;
-
     protected virtual void OnValidate()
     {
         if (nameText)
             SetName(CardName);
         if (tempHungerText)
-            SetHunger(CropClassCost);//, CropTypeCost);
+            SetHunger(CropClassCost);
         if (descText)
             SetDescription(Description);
         if (strengthText)
@@ -56,7 +56,7 @@ public abstract class Card : MonoBehaviour
         if (nameText)
             SetName(CardName);
         if (tempHungerText)
-            SetHunger(CropClassCost);//, CropTypeCost);
+            SetHunger(CropClassCost);
         if (descText)
             SetDescription(Description);
         if (strengthText)
@@ -80,31 +80,20 @@ public abstract class Card : MonoBehaviour
         OnHoverEnd?.Invoke(this);
     }
 
-    public virtual void SetPlacedZone(CardPlacementZone zone)
+    public virtual void BeforeHarvest()
     {
-        placedZone = zone;
+
     }
 
-    public virtual List<ProducedCrop> CheckCrops(List<ProducedCrop> crops)
+    public virtual List<CropClass> CheckCrops(List<CropClass> crops)
     {
-        List<ProducedCrop> ret = new List<ProducedCrop>(crops);
+        List<CropClass> ret = new List<CropClass>(crops);
 
-        /*foreach (CropType t in CropTypeCost)
-        {
-            foreach (ProducedCrop c in ret)
-            {
-                if (c.cropType == t)
-                {
-                    ret.Remove(c);
-                    break;
-                }
-            }
-        }*/
         foreach (CropClass t in CropClassCost)
         {
-            foreach (ProducedCrop c in ret)
+            foreach (CropClass c in ret)
             {
-                if (c.cropClass == t)
+                if (c == t)
                 {
                     ret.Remove(c);
                     break;
@@ -112,13 +101,83 @@ public abstract class Card : MonoBehaviour
             }
         }
 
-        if (crops.Count - ret.Count != /*CropTypeCost.Length + */CropClassCost.Length)
+        if (crops.Count - ret.Count != CropClassCost.Length)
             return crops;
     
         Fed = true;
         OnFed();
         return ret;
     }
+    protected virtual void OnFed()
+    {
+
+    }
+    public virtual List<CropClass> AbilityAfterEat(List<CropClass> crops)
+    {
+        return crops;
+    }
+
+
+    #region Attack
+    public Coroutine Attack(BoardField board)
+    {
+        if (CheckCreature(board))
+            return StartCoroutine(AttackAnim(board.CreatureZones[Lane]));
+
+        if (CheckCrop(board))
+            return StartCoroutine(AttackAnim(board.CropZones[Lane]));
+
+        if (CheckPlayer(board))
+            return StartCoroutine(AttackAnim(board.CropZones[Lane], true));
+
+        return null;
+    }
+    protected virtual IEnumerator AttackAnim(CardPlacementZone target, bool attackPlayer = false)
+    {
+        Vector3 startPos = transform.position;
+        float endTime = Time.time + GameController.AttackAnimTime / 2;
+
+        while (Time.time < endTime)
+        {
+            float t = 1 - (endTime - Time.time) / (GameController.AttackAnimTime / 2);
+            transform.position = startPos + (target.transform.position - startPos) * t;
+            yield return new WaitForEndOfFrame();
+        }
+
+        if (attackPlayer)
+        {
+            GameController.Instance.GetOpponent(Player).Damage(Strength);
+            OnAttack(null);
+        }
+        else
+            OnAttack(target.AttackZone(Strength, this));
+
+        endTime = Time.time + GameController.AttackAnimTime / 2;
+
+        while (Time.time < endTime)
+        {
+            float t = 1 - (endTime - Time.time) / (GameController.AttackAnimTime / 2);
+            transform.position = target.transform.position + (startPos - target.transform.position) * t;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+    protected virtual bool CheckCreature(BoardField board)
+    {
+        return board.CreatureZones[Lane].PlayedCards.Count > 0;
+    }
+    protected virtual bool CheckCrop(BoardField board)
+    {
+        return board.CropZones[Lane].PlayedCards.Count > 0;
+    }
+    protected virtual bool CheckPlayer(BoardField board)
+    {
+        return true;
+    }
+    protected virtual void OnAttack(Card target)
+    {
+
+    }
+    #endregion
 
     public void CheckDeath()
     {
@@ -127,52 +186,8 @@ public abstract class Card : MonoBehaviour
         Fed = false;
     }
 
-    protected virtual void OnFed()
-    {
-
-    }
-
-    public void DoAttack(int lane, BoardField board)
-    {
-        Card attackedCard = CheckCreature(lane, board);
-        if (attackedCard)
-        {
-            OnAttack(attackedCard);
-            return;
-        }
-        attackedCard = CheckCrop(lane, board);
-        if (attackedCard)
-        {
-            OnAttack(attackedCard);
-            return;
-        }
-        CheckPlayer(board);
-    }
-    protected virtual Card CheckCreature(int lane, BoardField board)
-    {
-        if (board.CreatureZones[lane].PlayedCards.Count == 0)
-            return null;
-
-        return board.CreatureZones[lane].AttackZone(Strength, this);
-    }
-    protected virtual Card CheckCrop(int lane, BoardField board)
-    {
-        if (board.CropZones[lane].PlayedCards.Count == 0)
-            return null;
-
-        return board.CropZones[lane].AttackZone(Strength, this);
-    }
-    protected virtual void CheckPlayer(BoardField board)
-    {
-        board.DamagePlayer(Strength);
-    }
-    protected virtual void OnAttack(Card target)
-    {
-
-    }
-
     // Return true if dead
-    public bool Damage(int amount, Card source)
+    public virtual bool Damage(int amount, Card source, bool ignoreDeath=false)
     {
         Health -= amount;
         OnDamaged(amount, source);
@@ -180,7 +195,8 @@ public abstract class Card : MonoBehaviour
 
         if (Health <= 0)
         {
-            DestroyCard();
+            if (!ignoreDeath)
+                DestroyCard();
             return true;
         }
         return false;
@@ -189,7 +205,6 @@ public abstract class Card : MonoBehaviour
     {
 
     }
-
 
     public virtual void DestroyCard()
     {
@@ -202,17 +217,13 @@ public abstract class Card : MonoBehaviour
     {
         nameText.text = n;
     }
-    protected void SetHunger(CropClass[] cClass)//, CropType[] cType)
+    protected void SetHunger(CropClass[] cClass)
     {
         string t = "";
         foreach (CropClass c in cClass)
         {
             t += c.ToString() + "\n";
         }
-        /*foreach (CropType c in cType)
-        {
-            t += c.ToString() + "\n";
-        }*/
         tempHungerText.text = t;
     }
     protected void SetDescription(string d)
@@ -226,6 +237,31 @@ public abstract class Card : MonoBehaviour
     protected void SetHealth(int h)
     {
         healthText.text = h.ToString();
+    }
+    #endregion
+
+    #region Helper functions
+    protected bool Surplus(List<CropClass> crops, CropClass crop, int count)
+    {
+        if (crops.FindAll((CropClass c) => c == crop).Count >= count)
+        {
+            for (int i = 0; i < count; i++)
+                crops.Remove(crop);
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool Heal(int amount)
+    {
+        Health += amount;
+        if (Health > BaseHealth)
+            Health = BaseHealth;
+
+        SetHealth(Health);
+
+        return true;
     }
     #endregion
 }

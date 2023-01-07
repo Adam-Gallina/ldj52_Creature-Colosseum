@@ -5,9 +5,9 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public PlayerNumber Player;
+    public BoardField Board;
     public List<Card> hand = new List<Card>();
     public List<Card> deck = new List<Card>();
-    public BoardField board;
     public int CurrLife;
 
     [Header("Hand")]
@@ -16,9 +16,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float handCardWidth;
     [SerializeField] private float hoveredCardOffset;
     [SerializeField] private float selectedCardScale;
-    protected Card hoveredCard;
+    [HideInInspector] public Card hoveredCard;
     protected bool selectedCard;
     protected CardPlacementZone hoveredZone;
+
+    [Header("Draw Pile")]
+    public DrawPile DrawPileObj;
+
+    private void Start()
+    {
+        DrawPileObj.SpawnCards(deck.Count);
+    }
 
     protected virtual void Update()
     {
@@ -116,14 +124,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public bool DrawCard(int count)
+    public Coroutine DrawCard(int count, bool doAnim=true)
     {
+        return StartCoroutine(DrawCardWithAnim(count, doAnim));
+    }
+    private IEnumerator DrawCardWithAnim(int count, bool doAnim)
+    {
+        if (doAnim)
+            yield return DrawPileObj.DoDrawCardAnim(count, handParent, 0.5f);
+
         for (int i = 0; i < count; i++)
         {
             if (deck.Count == 0)
-                return false;
-            
+                break;
+
             Card c = Instantiate(deck[0], handParent);
+            c.Player = Player;
             c.OnHover += HoverCard;
             c.OnClick += SelectCard;
             c.OnHoverEnd += EndHoverCard;
@@ -131,8 +147,6 @@ public class PlayerController : MonoBehaviour
             hand.Add(c);
             deck.RemoveAt(0);
         }
-
-        return true;
     }
 
     private void PlayCard(Card c, CardPlacementZone zone)

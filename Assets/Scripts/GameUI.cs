@@ -23,6 +23,11 @@ public class GameUI : MonoBehaviour
         P2HealthText.text = "P2: " + GameController.Instance.P2.CurrLife;
     }
 
+    public void PressStart()
+    {
+        GameController.Instance.StartGame();
+    }
+
     public void PressEndTurn()
     {
         GameController.Instance.EndTurn();

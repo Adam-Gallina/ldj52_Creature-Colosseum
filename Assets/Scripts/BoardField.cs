@@ -9,7 +9,7 @@ public class BoardField : MonoBehaviour
     public CardPlacementZone[] CreatureZones = new CardPlacementZone[0];
     public CardPlacementZone[] CropZones = new CardPlacementZone[0];
 
-    public List<ProducedCrop> cropSurplus = new List<ProducedCrop>();
+    public List<CropClass> cropSurplus = new List<CropClass>();
 
     private void OnValidate()
     {
@@ -42,14 +42,17 @@ public class BoardField : MonoBehaviour
 
     public void DoHarvest()
     {
+        foreach (CardPlacementZone zone in CreatureZones)
+        {
+            if (zone.PlayedCards.Count == 1)
+                zone.PlayedCards[0].BeforeHarvest();
+        }
+
         foreach (CardPlacementZone zone in CropZones)
         {
             foreach (Card c in zone.PlayedCards)
             {
-                foreach (ProducedCrop crop in ((Crop)c).HarvestCrop())
-                {
-                    cropSurplus.Add(crop);
-                }
+                cropSurplus.AddRange(((Crop)c).HarvestCrop());
             }
         }
     }
@@ -81,24 +84,39 @@ public class BoardField : MonoBehaviour
                 cropSurplus = c.CheckCrops(cropSurplus);
             }
         }
+
+        // Abilities
+        foreach (CardPlacementZone zone in CreatureZones)
+        {
+            foreach (Card c in zone.PlayedCards)
+            {
+                cropSurplus = c.AbilityAfterEat(cropSurplus);
+            }
+        }
+        foreach (CardPlacementZone zone in CropZones)
+        {
+            foreach (Card c in zone.PlayedCards)
+            {
+                cropSurplus = c.AbilityAfterEat(cropSurplus);
+            }
+        }
     }
 
-    public void DoCombat()
+    public Coroutine Combat()
     {
-        BoardField opponent = GameBoard.Instance.GetOpposingField(Player);
+        return StartCoroutine(DoCombat());
+    }
+    private IEnumerator DoCombat()
+    {
+        BoardField opponent = GameController.Instance.GetOpponent(Player).Board;
 
         for (int lane = 0; lane < CreatureZones.Length; lane++)
         {
             if (CreatureZones[lane].PlayedCards.Count == 1)
             {
-                CreatureZones[lane].PlayedCards[0].DoAttack(lane, opponent);
+                yield return CreatureZones[lane].PlayedCards[0].Attack(opponent);
             }
         }
-    }
-
-    public void DamagePlayer(int amount)
-    {
-        GameController.Instance.GetPlayer(Player).Damage(amount);
     }
 
     public void CheckStarve()

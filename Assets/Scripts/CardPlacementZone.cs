@@ -10,6 +10,12 @@ public class CardPlacementZone : MonoBehaviour
     public int MaxCards;
     public Vector3 CardOffset;
 
+    [SerializeField] private float hoveredCardOffset;
+    [SerializeField] private float hoveredCardScale;
+    [SerializeField] private float selectedCardScale;
+    protected Card hoveredCard;
+    protected bool selectedCard;
+
     public List<Card> PlayedCards = new List<Card>();
 
     private void ArrangeCards()
@@ -18,7 +24,14 @@ public class CardPlacementZone : MonoBehaviour
 
         foreach (Card c in PlayedCards)
         {
-            c.transform.localPosition = currOffset;
+            Vector3 scale = new Vector3(1, 1, 1);
+            if (c == hoveredCard && selectedCard)
+                scale = new Vector3(selectedCardScale, selectedCardScale, selectedCardScale);
+            else if (c == hoveredCard)
+                scale = new Vector3(hoveredCardScale, hoveredCardScale, hoveredCardScale);
+
+            c.transform.localScale = scale;
+            c.transform.localPosition = c == hoveredCard ? currOffset + new Vector3(0, 0, hoveredCardOffset) : currOffset;
             currOffset += CardOffset;
         }
     }
@@ -40,10 +53,47 @@ public class CardPlacementZone : MonoBehaviour
             return false;
 
         PlayedCards.Add(c);
-        c.SetPlacedZone(this);
+        c.OnHover += HoverCard;
+        c.OnClick += SelectCard;
+        c.OnHoverEnd += EndHoverCard;
         c.OnDeath += CardDeath;
+        c.Lane = Lane;
         ArrangeCards();
         return true;
+    }
+
+    private void HoverCard(Card card)
+    {
+        if (GameController.Instance.GetPlayer(card.Player).hoveredCard)
+            return;
+
+        if (!selectedCard)
+            hoveredCard = card;
+        ArrangeCards();
+    }
+
+    private void SelectCard(Card card)
+    {
+        if (GameController.Instance.GetPlayer(card.Player).hoveredCard)
+            return;
+
+        if (selectedCard)
+        {
+            if (card == hoveredCard)
+                selectedCard = false;
+            else
+                hoveredCard = card;
+        }
+        else
+            selectedCard = true;
+        ArrangeCards();
+    }
+
+    private void EndHoverCard(Card card)
+    {
+        if (!selectedCard)
+            hoveredCard = null;
+        ArrangeCards();
     }
 
     private void CardDeath(Card c)
@@ -61,7 +111,7 @@ public class CardPlacementZone : MonoBehaviour
         foreach (Card c in PlayedCards)
         {
             int h = c.Health;
-            if (c.Damage(damage, source))
+            if (c.Damage(damage, source, true))
             {
                 kills += 1;
                 damage -= h;
@@ -71,7 +121,7 @@ public class CardPlacementZone : MonoBehaviour
         Card ret = PlayedCards[0];
         for (int i = 0; i < kills; i++)
         {
-            PlayedCards.RemoveAt(0);
+            PlayedCards[0].DestroyCard();
         }
         ArrangeCards();
         return ret;
