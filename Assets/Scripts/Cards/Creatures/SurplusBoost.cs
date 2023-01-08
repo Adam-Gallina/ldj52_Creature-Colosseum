@@ -17,7 +17,7 @@ public class SurplusBoost : Creature
         base.OnValidate();
     }
 
-    public override List<CropClass> AbilityAfterEat(List<CropClass> crops)
+    public override void AbilityAfterEat(List<CropIcon> crops)
     {
         if (Surplus(crops, surplusType, surplusCount))
         {
@@ -27,8 +27,6 @@ public class SurplusBoost : Creature
             Health += healthBoost;
         }
 
-        SetStrength(Strength);
-        SetHealth(Health);
-        return crops;
+        UpdateStats();
     }
 }

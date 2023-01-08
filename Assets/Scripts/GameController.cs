@@ -66,8 +66,8 @@ public class GameController : MonoBehaviour
         int round = 0;
         while (!CheckWin())
         {
-            BoardField currField = GetPlayer(CurrPlayer).Board;
-            //currField.DoTurnStart();
+            PlayerBoard currField = GetPlayer(CurrPlayer).Board;
+            currField.OnTurnStart();
 
             yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Turn", 0.5f);
 
@@ -81,6 +81,7 @@ public class GameController : MonoBehaviour
 
             yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Harvest", 0.5f);
             currField.DoHarvest();
+            yield return new WaitForSeconds(Constants.CropHarvestTime);
 
             yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Feast", 0.5f);
             // Cast Charms
@@ -88,6 +89,8 @@ public class GameController : MonoBehaviour
 
             // Feed Creatures
             currField.DoHunger();
+
+            yield return new WaitForSeconds(Constants.CropConsumeTime);
 
             // Do Attacks
             if (round != 0)// || CurrPlayer != PlayerNumber.P1)
@@ -101,7 +104,7 @@ public class GameController : MonoBehaviour
 
             currField.RemoveSurplus();
 
-            //currField.OnTurnEnd();
+            currField.OnTurnEnd();
 
             CurrPlayer = CurrPlayer == PlayerNumber.P1 ? PlayerNumber.P2 : PlayerNumber.P1;
             if (CurrPlayer == startPlayer)

@@ -16,18 +16,16 @@ public class Parrot : Creature
         base.OnValidate();
     }
 
-    public override List<CropClass> AbilityAfterEat(List<CropClass> crops)
+    public override void AbilityAfterEat(List<CropIcon> crops)
     {
         if (Surplus(crops, surplusType, surplusCount))
         {
-            BoardField b = GameController.Instance.GetPlayer(Player).Board;
+            PlayerBoard b = GameController.Instance.GetPlayer(Player).Board;
             if (Lane > 0 && b.CreatureZones[Lane - 1].PlayedCards.Count == 1)
                 b.CreatureZones[Lane - 1].PlayedCards[0].Heal(healAmount);
 
             if (Lane < 3 && b.CreatureZones[Lane + 1].PlayedCards.Count == 1)
                 b.CreatureZones[Lane + 1].PlayedCards[0].Heal(healAmount);
         }
-
-        return crops;
     }
 }

@@ -24,8 +24,7 @@ public class KillBoost : Creature
             BaseHealth += healthBoost;
             Health += healthBoost;
 
-            SetStrength(Strength);
-            SetHealth(Health);
+            UpdateStats();
         }
     }
 }

@@ -6,8 +6,14 @@ public enum CropClass { None, Vegetable, Fruit, Seed, Meat }
 public class Crop : Card
 {
     [Header("Crop Stats")]
-    public List<CropClass> producedCrops = new List<CropClass>();
+    public List<CropIcon> producedCrops = new List<CropIcon>();
     protected int cropBoost = 1;
+
+    [Header("Harvest anim")]
+    [SerializeField] protected Transform cropSpawnPoint;
+    [SerializeField] protected float minYDist;
+    [SerializeField] protected float maxYDist;
+    [SerializeField] protected float maxXDelta;
 
     protected override void OnValidate()
     {
@@ -16,12 +22,26 @@ public class Crop : Card
         CardType = CardType.Crop;
     }
 
-    public virtual CropClass[] HarvestCrop()
+    protected override string GetDescription()
     {
-        CropClass[] ret = new CropClass[producedCrops.Count * cropBoost];
+        string prod = "";
+        foreach (CropIcon c in producedCrops)
+            if (c)
+                prod += c.CropType + " ";
 
-        for (int i = 0; i < cropBoost; i++)
-            producedCrops.CopyTo(ret, producedCrops.Count * i);
+        return $"Produces {producedCrops.Count} {prod} every turn";
+    }
+
+    public virtual CropIcon[] HarvestCrop()
+    {
+        CropIcon[] ret = new CropIcon[producedCrops.Count * cropBoost];
+
+        for (int i = 0; i < ret.Length; i++)
+        {
+            CropIcon c = Instantiate(producedCrops[i % producedCrops.Count], cropSpawnPoint.position, Quaternion.identity);
+            c.MoveIcon(transform.position + new Vector3(Random.Range(-maxXDelta, maxXDelta), Random.Range(minYDist, maxYDist), 0), Constants.CropHarvestTime);
+            ret[i] = c;
+        }
 
         cropBoost = 1;
         return ret;

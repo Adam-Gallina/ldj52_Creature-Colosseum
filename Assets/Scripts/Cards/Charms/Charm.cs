@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class Charm : Card
 {
+    [SerializeField] protected bool destroyOnUse = true;
+
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -11,12 +13,20 @@ public abstract class Charm : Card
         CardType = CardType.Charm;
     }
 
-    protected override void OnFed()
+    public override void AbilityAfterEat(List<CropIcon> crops)
     {
-        base.OnFed();
+        if (!Fed)
+        {
+            DestroyCard();
+            return;
+        }
 
-        UseCharm();
+        UseCharm(crops);
+
+        if (destroyOnUse)
+            DestroyCard();
+
     }
 
-    public abstract void UseCharm();
+    public abstract void UseCharm(List<CropIcon> crops);
 }

@@ -2,22 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardField : MonoBehaviour
+public class PlayerBoard : MonoBehaviour
 {
     public PlayerNumber Player;
-    public CardPlacementZone CharmZone;
+    public CardPlacementZone[] CharmZones = new CardPlacementZone[0];
     public CardPlacementZone[] CreatureZones = new CardPlacementZone[0];
     public CardPlacementZone[] CropZones = new CardPlacementZone[0];
 
-    public List<CropClass> cropSurplus = new List<CropClass>();
+    public List<CropIcon> cropSurplus = new List<CropIcon>();
 
     private void OnValidate()
     {
-        if (CharmZone)
+        for (int i = 0; i < CharmZones.Length; i++)
         {
-            CharmZone.Player = Player;
-            CharmZone.ZoneType = CardType.Charm;
-            CharmZone.MaxCards = 0;
+            CharmZones[i].Player = Player;
+            CharmZones[i].Lane = i;
+            CharmZones[i].ZoneType = CardType.Charm;
+            CharmZones[i].MaxCards = 1;
         }
         for (int i = 0; i < CreatureZones.Length; i++)
         {
@@ -35,9 +36,25 @@ public class BoardField : MonoBehaviour
         }
     }
 
-    public void DoTurnStart()
+    public void OnTurnStart()
     {
-
+        foreach (CardPlacementZone zone in CharmZones)
+        {
+            if (zone.PlayedCards.Count == 1)
+                zone.PlayedCards[0].OnTurnBegin();
+        }
+        foreach (CardPlacementZone zone in CreatureZones)
+        {
+            if (zone.PlayedCards.Count == 1)
+                zone.PlayedCards[0].OnTurnBegin();
+        }
+        foreach (CardPlacementZone zone in CropZones)
+        {
+            foreach (Card c in zone.PlayedCards)
+            {
+                c.OnTurnBegin();
+            }
+        }
     }
 
     public void DoHarvest()
@@ -59,13 +76,21 @@ public class BoardField : MonoBehaviour
 
     public void DoCharms()
     {
-        for (int i = CharmZone.PlayedCards.Count - 1; i >= 0; i--)
+        foreach (CardPlacementZone zone in CharmZones)
         {
-            cropSurplus = CharmZone.PlayedCards[0].CheckCrops(cropSurplus);
-            CharmZone.PlayedCards[0].DestroyCard();
+            if (zone.PlayedCards.Count == 1)
+            {
+                zone.PlayedCards[0].CheckCrops(cropSurplus);
+            }
         }
 
-        CharmZone.PlayedCards.Clear();
+        foreach (CardPlacementZone zone in CharmZones)
+        {
+            if (zone.PlayedCards.Count == 1)
+            {
+                zone.PlayedCards[0].AbilityAfterEat(cropSurplus);
+            }
+        }
     }
 
     public void DoHunger()
@@ -74,14 +99,14 @@ public class BoardField : MonoBehaviour
         {
             foreach (Card c in zone.PlayedCards)
             {
-                cropSurplus = c.CheckCrops(cropSurplus);
+                c.CheckCrops(cropSurplus);
             }
         }
         foreach (CardPlacementZone zone in CropZones)
         {
             foreach (Card c in zone.PlayedCards)
             {
-                cropSurplus = c.CheckCrops(cropSurplus);
+                c.CheckCrops(cropSurplus);
             }
         }
 
@@ -90,14 +115,14 @@ public class BoardField : MonoBehaviour
         {
             foreach (Card c in zone.PlayedCards)
             {
-                cropSurplus = c.AbilityAfterEat(cropSurplus);
+                c.AbilityAfterEat(cropSurplus);
             }
         }
         foreach (CardPlacementZone zone in CropZones)
         {
             foreach (Card c in zone.PlayedCards)
             {
-                cropSurplus = c.AbilityAfterEat(cropSurplus);
+                c.AbilityAfterEat(cropSurplus);
             }
         }
     }
@@ -108,7 +133,7 @@ public class BoardField : MonoBehaviour
     }
     private IEnumerator DoCombat()
     {
-        BoardField opponent = GameController.Instance.GetOpponent(Player).Board;
+        PlayerBoard opponent = GameController.Instance.GetOpponent(Player).Board;
 
         for (int lane = 0; lane < CreatureZones.Length; lane++)
         {
@@ -137,11 +162,29 @@ public class BoardField : MonoBehaviour
 
     public void RemoveSurplus()
     {
+        foreach (CropIcon c in cropSurplus)
+            Destroy(c.gameObject);
         cropSurplus.Clear();
     }
 
     public void OnTurnEnd()
     {
-
+        foreach (CardPlacementZone zone in CharmZones)
+        {
+            if (zone.PlayedCards.Count == 1)
+                zone.PlayedCards[0].OnTurnEnd();
+        }
+        foreach (CardPlacementZone zone in CreatureZones)
+        {
+            if (zone.PlayedCards.Count == 1)
+                zone.PlayedCards[0].OnTurnEnd();
+        }
+        foreach (CardPlacementZone zone in CropZones)
+        {
+            foreach (Card c in zone.PlayedCards)
+            {
+                c.OnTurnEnd();
+            }
+        }
     }
 }

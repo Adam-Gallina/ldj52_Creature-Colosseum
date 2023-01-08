@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public PlayerNumber Player;
-    public BoardField Board;
+    public PlayerBoard Board;
     public List<Card> hand = new List<Card>();
     public List<Card> deck = new List<Card>();
     public int CurrLife;
@@ -116,7 +116,11 @@ public class PlayerController : MonoBehaviour
                 cardPos.y = hoveredCardOffset;
 
             if (selectedCard && c == hoveredCard)
+            {
                 cardScale = new Vector3(selectedCardScale, selectedCardScale, selectedCardScale);
+                cardPos.y += selectedCardScale / 2;
+                cardPos.z += -0.1f;
+            }
 
             c.transform.localScale = cardScale;
             c.transform.localPosition = cardPos;

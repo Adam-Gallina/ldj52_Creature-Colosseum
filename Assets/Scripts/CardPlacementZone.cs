@@ -32,6 +32,7 @@ public class CardPlacementZone : MonoBehaviour
 
             c.transform.localScale = scale;
             c.transform.localPosition = c == hoveredCard ? currOffset + new Vector3(0, 0, hoveredCardOffset) : currOffset;
+            c.CardUI.SetUnderCard(PlayedCards.IndexOf(c) != PlayedCards.Count - 1);
             currOffset += CardOffset;
         }
     }
@@ -51,6 +52,8 @@ public class CardPlacementZone : MonoBehaviour
     {
         if (!CanPlaceCard(c, p))
             return false;
+
+        c.transform.parent = transform;
 
         PlayedCards.Add(c);
         c.OnHover += HoverCard;
