@@ -31,14 +31,16 @@ public class DrawPile : MonoBehaviour
     {
         Transform card = cards[0];
         cards.Remove(card);
-
+        
         float end = Time.time + duration;
         Vector3 startPos = card.position;
+        //Vector3 startRot = card.eulerAngles;
 
         while (Time.time <= end)
         {
             float t = 1 - (end - Time.time) / duration;
             card.position = startPos + (target.position - startPos) * t;
+            //card.eulerAngles = startRot + (target.eulerAngles - startRot) * t;
 
             yield return new WaitForEndOfFrame();
         }

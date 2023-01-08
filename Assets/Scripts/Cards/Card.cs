@@ -7,7 +7,18 @@ using UnityEditor;
 public enum CardType { Charm, Creature, Crop }
 public abstract class Card : MonoBehaviour
 {
-    [HideInInspector] public PlayerNumber Player;
+    private PlayerNumber p;
+    [HideInInspector] public PlayerNumber Player
+    {
+        get { return p; }
+        set
+        {
+            p = value;
+            Vector3 s = CardUI.GetArtFigure().localScale;
+            s.x = Mathf.Abs(s.x) * (value == PlayerNumber.P1 ? 1 : - 1);
+            CardUI.GetArtFigure().localScale = s;
+        }
+    }
 
     [Header("Stats")]
     public CardType CardType;
@@ -26,6 +37,7 @@ public abstract class Card : MonoBehaviour
 
     [Header("Image")]
     public CardUI CardUI;
+    [SerializeField] private float artScale = 2;
 
     public event Action<Card> OnHover;
     public event Action<Card> OnClick;
@@ -86,6 +98,12 @@ public abstract class Card : MonoBehaviour
     private void OnMouseExit()
     {
         OnHoverEnd?.Invoke(this);
+    }
+
+    public void OnPlayCard()
+    {
+        artScale = Mathf.Abs(artScale) * (Player == PlayerNumber.P1 ? 1 : -1);
+        CardUI.ArtStandAnim(Camera.main.transform.eulerAngles.x, artScale, Constants.ArtStandTime);
     }
 
     public virtual void OnTurnBegin()
@@ -149,13 +167,15 @@ public abstract class Card : MonoBehaviour
     }
     protected virtual IEnumerator AttackAnim(CardPlacementZone target, bool attackPlayer = false)
     {
-        Vector3 startPos = transform.position;
+        Transform art = CardUI.GetArtFigure();
+
+        Vector3 startPos = art.position;
         float endTime = Time.time + GameController.AttackAnimTime / 2;
 
         while (Time.time < endTime)
         {
             float t = 1 - (endTime - Time.time) / (GameController.AttackAnimTime / 2);
-            transform.position = startPos + (target.transform.position - startPos) * t;
+            art.position = startPos + (target.transform.position - startPos) * t;
             yield return new WaitForEndOfFrame();
         }
 
@@ -172,9 +192,11 @@ public abstract class Card : MonoBehaviour
         while (Time.time < endTime)
         {
             float t = 1 - (endTime - Time.time) / (GameController.AttackAnimTime / 2);
-            transform.position = target.transform.position + (startPos - target.transform.position) * t;
+            art.position = target.transform.position + (startPos - target.transform.position) * t;
             yield return new WaitForEndOfFrame();
         }
+
+        art.position = startPos;
     }
     protected virtual bool CheckCreature(PlayerBoard board)
     {

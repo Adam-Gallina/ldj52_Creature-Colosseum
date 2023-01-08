@@ -10,13 +10,18 @@ public class CardPlacementZone : MonoBehaviour
     public int MaxCards;
     public Vector3 CardOffset;
 
-    [SerializeField] private float hoveredCardOffset;
     [SerializeField] private float hoveredCardScale;
     [SerializeField] private float selectedCardScale;
     protected Card hoveredCard;
-    protected bool selectedCard;
+    protected GameObject selectedCard;
 
     public List<Card> PlayedCards = new List<Card>();
+
+    private void Update()
+    {
+        if (selectedCard && !hoveredCard && Input.GetKeyDown(KeyCode.Mouse0))
+            Destroy(selectedCard);
+    }
 
     private void ArrangeCards()
     {
@@ -25,13 +30,10 @@ public class CardPlacementZone : MonoBehaviour
         foreach (Card c in PlayedCards)
         {
             Vector3 scale = new Vector3(1, 1, 1);
-            if (c == hoveredCard && selectedCard)
-                scale = new Vector3(selectedCardScale, selectedCardScale, selectedCardScale);
-            else if (c == hoveredCard)
+            if (c == hoveredCard)
                 scale = new Vector3(hoveredCardScale, hoveredCardScale, hoveredCardScale);
 
             c.transform.localScale = scale;
-            c.transform.localPosition = c == hoveredCard ? currOffset + new Vector3(0, 0, hoveredCardOffset) : currOffset;
             c.CardUI.SetUnderCard(PlayedCards.IndexOf(c) != PlayedCards.Count - 1);
             currOffset += CardOffset;
         }
@@ -62,6 +64,7 @@ public class CardPlacementZone : MonoBehaviour
         c.OnDeath += CardDeath;
         c.Lane = Lane;
         ArrangeCards();
+        c.OnPlayCard();
         return true;
     }
 
@@ -70,8 +73,7 @@ public class CardPlacementZone : MonoBehaviour
         if (GameController.Instance.GetPlayer(card.Player).hoveredCard)
             return;
 
-        if (!selectedCard)
-            hoveredCard = card;
+        hoveredCard = card;
         ArrangeCards();
     }
 
@@ -83,19 +85,25 @@ public class CardPlacementZone : MonoBehaviour
         if (selectedCard)
         {
             if (card == hoveredCard)
-                selectedCard = false;
+                Destroy(selectedCard);
             else
                 hoveredCard = card;
         }
         else
-            selectedCard = true;
+        {
+            selectedCard = Instantiate(card.gameObject, GameObject.Find("Card Inspector").transform);
+            selectedCard.transform.localScale = new Vector3(selectedCardScale, selectedCardScale, selectedCardScale);
+            foreach (Transform t in selectedCard.GetComponentsInChildren<Transform>())
+                t.gameObject.layer = Constants.PlayerHandLayer;
+            selectedCard.GetComponentInChildren<CardUI>().SetUnderCard(false);
+            selectedCard.GetComponentInChildren<CardUI>().SetArtStand(0, 1);
+        }
         ArrangeCards();
     }
 
     private void EndHoverCard(Card card)
     {
-        if (!selectedCard)
-            hoveredCard = null;
+        hoveredCard = null;
         ArrangeCards();
     }
 

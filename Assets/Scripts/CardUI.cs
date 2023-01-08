@@ -24,6 +24,9 @@ public class CardUI : MonoBehaviour
     [SerializeField] protected GameObject uiSeedIconPrefab;
     [SerializeField] protected GameObject uiMeatIconPrefab;
 
+    [Header("Card Art")]
+    [SerializeField] protected Transform figureParent;
+
     private GameObject GetIconPrefab(CropClass crop)
     {
         switch (crop) 
@@ -95,9 +98,49 @@ public class CardUI : MonoBehaviour
 
     public void SetUnderCard(bool under)
     {
-        descText.gameObject.SetActive(!under);
-        hungerParent.gameObject.SetActive(!under);
-        strengthText.gameObject.SetActive(!under);
-        healthText.gameObject.SetActive(!under);
+        descText?.gameObject.SetActive(!under);
+        hungerParent?.gameObject.SetActive(!under);
+        strengthText?.gameObject.SetActive(!under);
+        healthText?.gameObject.SetActive(!under);
+    }
+
+
+    public Transform GetArtFigure()
+    {
+        return figureParent;
+    }
+
+    public void SetArtStand(float rot, float scale)
+    {
+        figureParent.localEulerAngles = new Vector3(rot, 0, 0);
+        figureParent.localScale = new Vector3(scale, scale, scale);
+    }
+
+    public Coroutine ArtStandAnim(float targetRot, float targetScale, float duration)
+    {
+        if (!figureParent)
+            return null;
+
+        return StartCoroutine(DoArtStandAnim(targetRot, targetScale, duration));
+    }
+
+    private IEnumerator DoArtStandAnim(float targetRot, float targetScale, float duration)
+    {
+        float end = Time.time + duration;
+        float startRot = figureParent.eulerAngles.x;
+        if (targetRot > 180)
+            targetRot -= 360;
+        float startScale = figureParent.localScale.x;
+
+        while (Time.time < end)
+        {
+            float t = 1 - (end - Time.time) / duration;
+            figureParent.eulerAngles = new Vector3(startRot + (targetRot - startRot) * t, 0, 0);
+            float s = startScale + (targetScale - startScale) * t;
+            figureParent.localScale = new Vector3(s, Mathf.Abs(s), Mathf.Abs(s));
+            yield return new WaitForEndOfFrame();
+        }
+
+        figureParent.eulerAngles = new Vector3(targetRot, 0, 0);
     }
 }

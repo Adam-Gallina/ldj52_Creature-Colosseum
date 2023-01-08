@@ -25,6 +25,11 @@ public class GameController : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        GameObject.Find("Card Inspector").transform.forward = Camera.main.transform.forward;
+    }
+
     public PlayerController GetPlayer(PlayerNumber p)
     {
         return p == PlayerNumber.P1 ? P1 : P2;

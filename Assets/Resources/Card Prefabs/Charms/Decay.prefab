@@ -89,6 +89,90 @@ MonoBehaviour:
   destroyOnUse: 1
   damageAmount: 1
   summonedCard: {fileID: 2763808680456810455, guid: 8753559e320ffcd4f9fda157cb8310d6, type: 3}
+--- !u!1 &2432414907423926818
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8609841742796536231}
+  - component: {fileID: 1673475139548759866}
+  m_Layer: 0
+  m_Name: Pow_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8609841742796536231
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2432414907423926818}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.06, z: 0}
+  m_LocalScale: {x: 0.35, y: 0.35, z: 0.5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8745747570969286944}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1673475139548759866
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2432414907423926818}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 12
+  m_Sprite: {fileID: 1878153989, guid: 996daf20b39025341a57a05023262a02, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 0.9506726}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1001 &7661195614445135156
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -96,6 +180,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 185409979296946698}
     m_Modifications:
+    - target: {fileID: 1757630571802949430, guid: 7ff3aec0596ad3b4b93fbec84505a619, type: 3}
+      propertyPath: healthText
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1757630571802949430, guid: 7ff3aec0596ad3b4b93fbec84505a619, type: 3}
+      propertyPath: strengthText
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8446663290141978158, guid: 7ff3aec0596ad3b4b93fbec84505a619, type: 3}
       propertyPath: m_text
       value: Decay
@@ -196,3 +288,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 236a37f2b3e044d46ba767967f79530a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &8745747570969286944 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1372801591879695380, guid: 7ff3aec0596ad3b4b93fbec84505a619, type: 3}
+  m_PrefabInstance: {fileID: 7661195614445135156}
+  m_PrefabAsset: {fileID: 0}

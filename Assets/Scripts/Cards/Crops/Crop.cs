@@ -39,7 +39,10 @@ public class Crop : Card
         for (int i = 0; i < ret.Length; i++)
         {
             CropIcon c = Instantiate(producedCrops[i % producedCrops.Count], cropSpawnPoint.position, Quaternion.identity);
-            c.MoveIcon(transform.position + new Vector3(Random.Range(-maxXDelta, maxXDelta), Random.Range(minYDist, maxYDist), 0), Constants.CropHarvestTime);
+            c.transform.forward = Camera.main.transform.forward;
+            c.MoveIcon(transform.position + 
+                       c.transform.right * Random.Range(-maxXDelta, maxXDelta) +
+                       c.transform.up * Random.Range(minYDist, maxYDist), Constants.CropHarvestTime);
             ret[i] = c;
         }
 

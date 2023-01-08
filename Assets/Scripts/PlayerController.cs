@@ -34,9 +34,7 @@ public class PlayerController : MonoBehaviour
 
         if (selectedCard)
         {
-            Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(mouse, mouse - Camera.main.transform.position, 10, 1 << Constants.CardZoneLayer);
-
+            Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100, 1 << Constants.CardZoneLayer);
             hoveredZone = hit.transform ? hit.transform.GetComponent<CardPlacementZone>() : null;
         }
     }
@@ -99,27 +97,33 @@ public class PlayerController : MonoBehaviour
         float i = -((hand.Count - 1) * (handCardWidth + handCardOffset)) / 2;
         foreach (Card c in hand)
         {
+            c.transform.forward = Camera.main.transform.forward;
             Vector3 cardPos = new Vector3(i, 0, 0);
             Vector3 cardScale = new Vector3(1, 1, 1);
 
             if (selectedCard && c == hoveredCard && hoveredZone && hoveredZone.CanPlaceCard(c, Player) && GameController.Instance.CurrPlayer == Player)
             {
+                foreach (Transform g in c.GetComponentsInChildren<Transform>())
+                    g.gameObject.layer = Constants.DefaultLayer;
                 c.transform.localScale = cardScale;
                 c.transform.SetParent(hoveredZone.transform, false);
                 c.transform.localPosition = hoveredZone.PlayedCards.Count * hoveredZone.CardOffset;
+                c.transform.forward = hoveredZone.transform.forward;
                 continue;
             }
-            else
-                c.transform.SetParent(handParent);
+            
+            c.transform.SetParent(handParent);
+            foreach (Transform g in c.GetComponentsInChildren<Transform>())
+                g.gameObject.layer = Constants.PlayerHandLayer;
+            
 
             if (c == hoveredCard)
-                cardPos.y = hoveredCardOffset;
+                cardPos += c.transform.up * hoveredCardOffset;
 
             if (selectedCard && c == hoveredCard)
             {
                 cardScale = new Vector3(selectedCardScale, selectedCardScale, selectedCardScale);
-                cardPos.y += selectedCardScale / 2;
-                cardPos.z += -0.1f;
+                cardPos += c.transform.up * selectedCardScale / 2;
             }
 
             c.transform.localScale = cardScale;
