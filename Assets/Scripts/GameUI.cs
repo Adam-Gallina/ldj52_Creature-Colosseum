@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameUI : MonoBehaviour
 {
     public static GameUI Instance;
+
+    [SerializeField] private Button endTurnBtn;
+    [SerializeField] private Button undoBtn;
 
     [SerializeField] private TMP_Text P1HealthText;
     [SerializeField] private TMP_Text P2HealthText;
@@ -42,5 +46,16 @@ public class GameUI : MonoBehaviour
     {
         BannerText.text = text;
         yield return new WaitForSeconds(time);
+    }
+
+    public void SetEndTurnBtn(bool enabled)
+    {
+        endTurnBtn.interactable = enabled;
+        undoBtn.interactable = enabled;
+    }
+
+    public void UndoButton()
+    {
+        GameController.Instance.GetCurrPlayer().UnqueueLastCard();
     }
 }

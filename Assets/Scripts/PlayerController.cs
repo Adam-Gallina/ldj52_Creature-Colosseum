@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     [Header("Draw Pile")]
     public DrawPile DrawPileObj;
 
+    protected List<Card> queuedCards = new List<Card>();
+
     private void Start()
     {
         DrawPileObj.SpawnCards(deck.Count);
@@ -58,6 +60,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public virtual void TurnStart()
+    {
+
+    }
+    public virtual void TurnEnd()
+    {
+        queuedCards.Clear();
+    }
+
     private void HoverCard(Card card)
     {
         if (!selectedCard)
@@ -68,7 +79,8 @@ public class PlayerController : MonoBehaviour
     {
         if (selectedCard && hoveredZone && card == hoveredCard && GameController.Instance.CurrPlayer == Player)
         {
-            PlayCard(hoveredCard, hoveredZone);
+            //PlayCard(hoveredCard, hoveredZone);
+            QueueCard(hoveredCard, hoveredZone);
             selectedCard = false;
             hoveredCard = null;
             hoveredZone = null;
@@ -101,7 +113,7 @@ public class PlayerController : MonoBehaviour
             Vector3 cardPos = new Vector3(i, 0, 0);
             Vector3 cardScale = new Vector3(1, 1, 1);
 
-            if (selectedCard && c == hoveredCard && hoveredZone && hoveredZone.CanPlaceCard(c, Player) && GameController.Instance.CurrPlayer == Player)
+            if (selectedCard && c == hoveredCard && hoveredZone && hoveredZone.CanPlaceCard(c, Player) && GameController.Instance.CurrPlayer == Player && GameController.Instance.CanPlayCards)
             {
                 foreach (Transform g in c.GetComponentsInChildren<Transform>())
                     g.gameObject.layer = Constants.DefaultLayer;
@@ -146,8 +158,7 @@ public class PlayerController : MonoBehaviour
             if (deck.Count == 0)
                 break;
 
-            Card c = Instantiate(deck[0], handParent);
-            c.Player = Player;
+            Card c = SpawnCard(deck[0]);
             c.OnHover += HoverCard;
             c.OnClick += SelectCard;
             c.OnHoverEnd += EndHoverCard;
@@ -157,8 +168,47 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void PlayCard(Card c, CardPlacementZone zone)
+    protected Card SpawnCard(Card prefab)
     {
+        Card c = Instantiate(prefab, handParent);
+        c.Player = Player;
+        return c;
+    }
+
+    public void UnqueueLastCard()
+    {
+        if (queuedCards.Count == 0)
+            return;
+
+        Card c = queuedCards[0];
+        queuedCards.Remove(c);
+        c.GetComponentInParent<CardPlacementZone>().UnQueueCard(c);
+        hand.Add(c);
+        c.OnHover += HoverCard;
+        c.OnClick += SelectCard;
+        c.OnHoverEnd += EndHoverCard;
+    }
+
+    protected void QueueCard(Card c, CardPlacementZone zone)
+    {
+        if (!GameController.Instance.CanPlayCards)
+            return;
+
+        if (zone.QueueCard(c, Player))
+        {
+            queuedCards.Insert(0, c);
+            hand.Remove(c);
+            c.OnHover -= HoverCard;
+            c.OnClick -= SelectCard;
+            c.OnHoverEnd -= EndHoverCard;
+        }
+    }
+
+    protected void PlayCard(Card c, CardPlacementZone zone)
+    {
+        if (!GameController.Instance.CanPlayCards)
+            return;
+
         if (zone.PlaceCard(c, Player))
         {
             hand.Remove(c);

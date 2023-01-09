@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 304945828207278849}
   m_LocalRotation: {x: -0, y: -0, z: 0.47795528, w: 0.8783841}
-  m_LocalPosition: {x: 0.22199999, y: 0.332, z: 0}
+  m_LocalPosition: {x: 0.22199999, y: 0.332, z: -0.001}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 13
+  m_SortingOrder: 1
   m_Sprite: {fileID: 1678404857, guid: 00149e6a1b1f11e45859eddeb1a03c11, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -159,7 +159,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 12
+  m_SortingOrder: 0
   m_Sprite: {fileID: -474789986, guid: 054afbd668d2a0e4fbece8cf8b3f1db4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -243,7 +243,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e75a1ee5cb8109439c3244563b2f83a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: 0
   CardType: 2
   CardName: Vegetable
   CropClassCost: 
@@ -257,10 +256,11 @@ MonoBehaviour:
   Lane: 0
   Fed: 0
   CardUI: {fileID: 7312538023595218876}
+  artScale: 2
   producedCrops:
   - {fileID: 8781562664866363950, guid: 15a77e2354f4cbe4698614b76fe7ed2e, type: 3}
-  cropSpawnPoint: {fileID: 6390675622893830214}
-  minYDist: 0.25
+  cropSpawnPoint: {fileID: 7931449042550398110}
+  minYDist: 0.6
   maxYDist: 1.25
   maxXDelta: 0.5
 --- !u!1 &7787004262676427347
@@ -288,7 +288,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7787004262676427347}
   m_LocalRotation: {x: -0, y: -0, z: 0.32342777, w: 0.94625294}
-  m_LocalPosition: {x: 0.0039999993, y: 0.565, z: 0}
+  m_LocalPosition: {x: 0.0039999993, y: 0.565, z: -0.001}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -335,7 +335,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 13
+  m_SortingOrder: 1
   m_Sprite: {fileID: 1678404857, guid: 00149e6a1b1f11e45859eddeb1a03c11, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -372,7 +372,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8516681506375235343}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.213, y: 0.332, z: 0}
+  m_LocalPosition: {x: -0.213, y: 0.332, z: -0.001}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -419,7 +419,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 13
+  m_SortingOrder: 1
   m_Sprite: {fileID: 1678404857, guid: 00149e6a1b1f11e45859eddeb1a03c11, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

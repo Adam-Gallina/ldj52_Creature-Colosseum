@@ -96,15 +96,6 @@ public class CardUI : MonoBehaviour
         healthText.text = h.ToString();
     }
 
-    public void SetUnderCard(bool under)
-    {
-        descText?.gameObject.SetActive(!under);
-        hungerParent?.gameObject.SetActive(!under);
-        strengthText?.gameObject.SetActive(!under);
-        healthText?.gameObject.SetActive(!under);
-    }
-
-
     public Transform GetArtFigure()
     {
         return figureParent;

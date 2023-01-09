@@ -16,6 +16,7 @@ public class CardPlacementZone : MonoBehaviour
     protected GameObject selectedCard;
 
     public List<Card> PlayedCards = new List<Card>();
+    public List<Card> QueuedCards = new List<Card>();
 
     private void Update()
     {
@@ -34,7 +35,15 @@ public class CardPlacementZone : MonoBehaviour
                 scale = new Vector3(hoveredCardScale, hoveredCardScale, hoveredCardScale);
 
             c.transform.localScale = scale;
-            c.CardUI.SetUnderCard(PlayedCards.IndexOf(c) != PlayedCards.Count - 1);
+            currOffset += CardOffset;
+        }
+        foreach (Card c in QueuedCards)
+        {
+            Vector3 scale = new Vector3(1, 1, 1);
+            if (c == hoveredCard)
+                scale = new Vector3(hoveredCardScale, hoveredCardScale, hoveredCardScale);
+
+            c.transform.localScale = scale;
             currOffset += CardOffset;
         }
     }
@@ -44,18 +53,57 @@ public class CardPlacementZone : MonoBehaviour
         if (p != Player)
             return false;
 
-        if (MaxCards != 0 && PlayedCards.Count >= MaxCards)
+        if (MaxCards != 0 && (PlayedCards.Count + QueuedCards.Count) >= MaxCards)
             return false;
 
         return ZoneType == c.CardType;
     }
 
+    public void UnQueueCard(Card c)
+    {
+        if (QueuedCards.Remove(c))
+        {
+            c.OnHover -= HoverCard;
+            c.OnClick -= SelectCard;
+            c.OnHoverEnd -= EndHoverCard;
+            c.OnDeath -= CardDeath;
+            ArrangeCards();
+            c.GetComponentInChildren<CardUI>().SetArtStand(0, 1);
+        }
+    }
+    public bool QueueCard(Card c, PlayerNumber p)
+    {
+        if (!CanPlaceCard(c, p))
+            return false;
+
+        c.transform.SetParent(transform, false);
+
+        QueuedCards.Add(c);
+        c.OnHover += HoverCard;
+        c.OnClick += SelectCard;
+        c.OnHoverEnd += EndHoverCard;
+        c.OnDeath += CardDeath;
+        c.Lane = Lane;
+        ArrangeCards();
+        c.OnPlayCard();
+
+        return true;
+    }
+    public void PlayQueuedCards()
+    {
+        for (int i = 0; i < QueuedCards.Count; i++)
+        {
+            Card c = QueuedCards[0];
+            QueuedCards.Remove(c);
+            PlayedCards.Add(c);
+        }
+    }
     public bool PlaceCard(Card c, PlayerNumber p)
     {
         if (!CanPlaceCard(c, p))
             return false;
 
-        c.transform.parent = transform;
+        c.transform.SetParent(transform, false);
 
         PlayedCards.Add(c);
         c.OnHover += HoverCard;
@@ -65,6 +113,7 @@ public class CardPlacementZone : MonoBehaviour
         c.Lane = Lane;
         ArrangeCards();
         c.OnPlayCard();
+
         return true;
     }
 
@@ -95,7 +144,6 @@ public class CardPlacementZone : MonoBehaviour
             selectedCard.transform.localScale = new Vector3(selectedCardScale, selectedCardScale, selectedCardScale);
             foreach (Transform t in selectedCard.GetComponentsInChildren<Transform>())
                 t.gameObject.layer = Constants.PlayerHandLayer;
-            selectedCard.GetComponentInChildren<CardUI>().SetUnderCard(false);
             selectedCard.GetComponentInChildren<CardUI>().SetArtStand(0, 1);
         }
         ArrangeCards();

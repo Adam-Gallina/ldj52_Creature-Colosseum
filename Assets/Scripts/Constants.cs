@@ -8,6 +8,7 @@ public static class Constants
     public const int CardZoneLayer = 6;
     public const int PlayerHandLayer = 8;
 
+    public const float AttackAnimTime = 0.5f;
     public const float CropConsumeTime = 0.25f;
     public const float CropHarvestTime = 0.1f;
     public const float ArtStandTime = 0.25f;

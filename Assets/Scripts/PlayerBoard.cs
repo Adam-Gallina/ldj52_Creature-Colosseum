@@ -57,6 +57,25 @@ public class PlayerBoard : MonoBehaviour
         }
     }
 
+    public void PlayAllQueuedCards()
+    {
+        foreach (CardPlacementZone zone in CharmZones)
+        {
+            if (zone.QueuedCards.Count > 0)
+                zone.PlayQueuedCards();
+        }
+        foreach (CardPlacementZone zone in CreatureZones)
+        {
+            if (zone.QueuedCards.Count > 0)
+                zone.PlayQueuedCards();
+        }
+        foreach (CardPlacementZone zone in CropZones)
+        {
+            if (zone.QueuedCards.Count > 0)
+                zone.PlayQueuedCards();
+        }
+    }
+
     public void DoHarvest()
     {
         foreach (CardPlacementZone zone in CreatureZones)

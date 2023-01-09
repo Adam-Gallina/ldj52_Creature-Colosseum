@@ -170,11 +170,11 @@ public abstract class Card : MonoBehaviour
         Transform art = CardUI.GetArtFigure();
 
         Vector3 startPos = art.position;
-        float endTime = Time.time + GameController.AttackAnimTime / 2;
+        float endTime = Time.time + Constants.AttackAnimTime / 2;
 
         while (Time.time < endTime)
         {
-            float t = 1 - (endTime - Time.time) / (GameController.AttackAnimTime / 2);
+            float t = 1 - (endTime - Time.time) / (Constants.AttackAnimTime / 2);
             art.position = startPos + (target.transform.position - startPos) * t;
             yield return new WaitForEndOfFrame();
         }
@@ -187,11 +187,11 @@ public abstract class Card : MonoBehaviour
         else
             OnAttack(target.AttackZone(Strength + TempStrength, this));
 
-        endTime = Time.time + GameController.AttackAnimTime / 2;
+        endTime = Time.time + Constants.AttackAnimTime / 2;
 
         while (Time.time < endTime)
         {
-            float t = 1 - (endTime - Time.time) / (GameController.AttackAnimTime / 2);
+            float t = 1 - (endTime - Time.time) / (Constants.AttackAnimTime / 2);
             art.position = target.transform.position + (startPos - target.transform.position) * t;
             yield return new WaitForEndOfFrame();
         }

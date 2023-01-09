@@ -15,10 +15,9 @@ public class GameController : MonoBehaviour
     public PlayerController P2;
 
     [Header("Rules")]
-    public static int MaxLife = 10;
-    public static int StartCards = 5;
+    public int MaxLife = 10;
+    public int StartCards = 5;
     public static int MaxCropPerZone = 3;
-    public static float AttackAnimTime = 0.5f;
 
     private void Awake()
     {
@@ -66,54 +65,77 @@ public class GameController : MonoBehaviour
         return false;
     }
 
+    protected virtual IEnumerator PreGameLoop()
+    {
+        yield return null;
+    }
+
     private IEnumerator GameLoop()
     {
+        yield return PreGameLoop();
+
         int round = 0;
         while (!CheckWin())
         {
-            PlayerBoard currField = GetPlayer(CurrPlayer).Board;
-            currField.OnTurnStart();
-
-            yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Turn", 0.5f);
-
-            yield return GetCurrPlayer().DrawCard(1);
-            CanPlayCards = true;
-            turnEnded = false;
-
-            yield return new WaitUntil(() => turnEnded == true);
-
-            CanPlayCards = false;
-
-            yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Harvest", 0.5f);
-            currField.DoHarvest();
-            yield return new WaitForSeconds(Constants.CropHarvestTime);
-
-            yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Feast", 0.5f);
-            // Cast Charms
-            currField.DoCharms();
-
-            // Feed Creatures
-            currField.DoHunger();
-
-            yield return new WaitForSeconds(Constants.CropConsumeTime);
-
-            // Do Attacks
-            if (round != 0)// || CurrPlayer != PlayerNumber.P1)
-            {
-                yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Attack", 0.5f);
-                yield return currField.Combat();
-            }
-
-            yield return GameUI.Instance.SetBannerText(CurrPlayer + "'s Turn", 0);
-            currField.CheckStarve();
-
-            currField.RemoveSurplus();
-
-            currField.OnTurnEnd();
+            yield return StartRound(CurrPlayer, round != 0);
 
             CurrPlayer = CurrPlayer == PlayerNumber.P1 ? PlayerNumber.P2 : PlayerNumber.P1;
             if (CurrPlayer == startPlayer)
                 round += 1;
         }
+    }
+
+    protected Coroutine StartRound(PlayerNumber player, bool doAttacks, bool draw=true)
+    {
+        return StartCoroutine(DoRound(player, doAttacks, draw));
+    }
+    private IEnumerator DoRound(PlayerNumber player, bool doAttacks, bool draw=true)
+    {
+        GameUI.Instance.SetEndTurnBtn(false);
+        PlayerBoard currField = GetPlayer(player).Board;
+        GetPlayer(player).TurnStart();
+        currField.OnTurnStart();
+
+        yield return GameUI.Instance.SetBannerText(player + "'s Turn", 0.5f);
+
+        if (draw)
+            yield return GetPlayer(player).DrawCard(1);
+        CanPlayCards = true;
+        turnEnded = false;
+        GameUI.Instance.SetEndTurnBtn(true);
+
+        yield return new WaitUntil(() => turnEnded == true);
+        currField.PlayAllQueuedCards();
+
+        GameUI.Instance.SetEndTurnBtn(false);
+        CanPlayCards = false;
+
+        yield return GameUI.Instance.SetBannerText(player + "'s Harvest", 0.5f);
+        currField.DoHarvest();
+        yield return new WaitForSeconds(Constants.CropHarvestTime);
+
+        yield return GameUI.Instance.SetBannerText(player + "'s Feast", 0.5f);
+        // Cast Charms
+        currField.DoCharms();
+
+        // Feed Creatures
+        currField.DoHunger();
+
+        yield return new WaitForSeconds(Constants.CropConsumeTime);
+
+        // Do Attacks
+        if (doAttacks)
+        {
+            yield return GameUI.Instance.SetBannerText(player + "'s Attack", 0.5f);
+            yield return currField.Combat();
+        }
+
+        yield return GameUI.Instance.SetBannerText(player + "'s Turn", 0);
+        currField.CheckStarve();
+
+        currField.RemoveSurplus();
+
+        GetPlayer(player).TurnEnd();
+        currField.OnTurnEnd();
     }
 }
