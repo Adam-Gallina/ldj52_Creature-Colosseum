@@ -8,6 +8,13 @@ public class TutorialGC : GameController
     [SerializeField] private GameObject tutTextBkgd;
     [SerializeField] private TMP_Text tutText;
 
+    protected override void Start()
+    {
+        base.Start();
+
+        StartGame();
+    }
+
     protected override IEnumerator PreGameLoop()
     {
         GameUI.Instance.SetEndTurnBtn(false);

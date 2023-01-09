@@ -60,9 +60,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void ShuffleDeck()
+    {
+        for (int i = 0; i < deck.Count; i++)
+        {
+            Card temp = deck[i];
+            int randomIndex = Random.Range(i, deck.Count);
+            deck[i] = deck[randomIndex];
+            deck[randomIndex] = temp;
+        }
+    }
+
     public virtual void TurnStart()
     {
-
+        
     }
     public virtual void TurnEnd()
     {
@@ -223,6 +234,17 @@ public class PlayerController : MonoBehaviour
         CurrLife -= amount;
 
         if (CurrLife <= 0)
-            Debug.Log(Player + " lost!");
+            Invoke(nameof(OnLose), Constants.WinAnimTime);
+    }
+    protected virtual void OnLose()
+    {
+        if (Player == PlayerNumber.P1)
+        {
+            GameUI.Instance.ShowLoseScreen();
+        }
+        else
+        {
+            GameUI.Instance.ShowWinScreen();
+        }
     }
 }

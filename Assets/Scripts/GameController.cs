@@ -18,13 +18,14 @@ public class GameController : MonoBehaviour
     public int MaxLife = 10;
     public int StartCards = 5;
     public static int MaxCropPerZone = 3;
+    public bool ShuffleOnStart = true;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         GameObject.Find("Card Inspector").transform.forward = Camera.main.transform.forward;
     }
@@ -42,6 +43,12 @@ public class GameController : MonoBehaviour
     {
         P1.CurrLife = MaxLife;
         P2.CurrLife = MaxLife;
+
+        if (ShuffleOnStart)
+        {
+            P1.ShuffleDeck();
+            P2.ShuffleDeck();
+        }
 
         P1.DrawCard(StartCards, false);
         P2.DrawCard(StartCards, false);
