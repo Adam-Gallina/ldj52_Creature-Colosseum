@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3072904808316117490
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3072904808316117488}
+  - component: {fileID: 3072904808316117491}
+  m_Layer: 0
+  m_Name: Le Fruits
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3072904808316117488
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3072904808316117490}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3072904808316117491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3072904808316117490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6015d0b6e11d4f446b6c12562b0e4525, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deck:
+    DeckName: Le Fruits
+    Cards:
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 3026808835919554075, guid: ba6dd679cdc68f648b51ed275199287e, type: 3}
+    - {fileID: 1151958705258186281, guid: 945297aab3bc32049ad1a54035cf1cca, type: 3}
+    - {fileID: 1151958705258186281, guid: 945297aab3bc32049ad1a54035cf1cca, type: 3}
+    - {fileID: 3679367264799429310, guid: 8ca4f4ec6abbe4c4c84f51f9815ca04e, type: 3}
+    - {fileID: 3679367264799429310, guid: 8ca4f4ec6abbe4c4c84f51f9815ca04e, type: 3}
+    - {fileID: 3679367264799429310, guid: 8ca4f4ec6abbe4c4c84f51f9815ca04e, type: 3}
+    - {fileID: 92933957839342833, guid: 779201f7a0f93254c8579e92e75c2e9f, type: 3}
+    - {fileID: 92933957839342833, guid: 779201f7a0f93254c8579e92e75c2e9f, type: 3}
+    - {fileID: 92933957839342833, guid: 779201f7a0f93254c8579e92e75c2e9f, type: 3}
+    - {fileID: 2413183913281051601, guid: eb98873f451219d41ba9cb082e6b4ab7, type: 3}
+    - {fileID: 2413183913281051601, guid: eb98873f451219d41ba9cb082e6b4ab7, type: 3}
+    - {fileID: 2413183913281051601, guid: eb98873f451219d41ba9cb082e6b4ab7, type: 3}
+    - {fileID: 2413183913281051601, guid: eb98873f451219d41ba9cb082e6b4ab7, type: 3}
+    - {fileID: 8257446003793420538, guid: 8fb393135ef7891479b0c52b4a3fbaa2, type: 3}
+    - {fileID: 8257446003793420538, guid: 8fb393135ef7891479b0c52b4a3fbaa2, type: 3}
+    - {fileID: 8257446003793420538, guid: 8fb393135ef7891479b0c52b4a3fbaa2, type: 3}
+    - {fileID: 8257446003793420538, guid: 8fb393135ef7891479b0c52b4a3fbaa2, type: 3}
+    - {fileID: 354309053484233211, guid: 04a6f77ebd4d0314ca1b6ff3ef2b65b6, type: 3}
+    - {fileID: 354309053484233211, guid: 04a6f77ebd4d0314ca1b6ff3ef2b65b6, type: 3}

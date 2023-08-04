@@ -134,4 +134,25 @@ public class CardUI : MonoBehaviour
 
         figureParent.eulerAngles = new Vector3(targetRot, 0, 0);
     }
+
+    public Coroutine DeathAnim(float targetScale, float duration)
+    {
+        return StartCoroutine(DoDeathAnim(targetScale, duration));
+    }
+
+    private IEnumerator DoDeathAnim(float targetScale, float duration)
+    {
+        float end = Time.time + duration;
+        float startScale = transform.localScale.x;
+
+        while (Time.time < end)
+        {
+            float t = 1 - (end - Time.time) / duration;
+            float s = startScale + (targetScale - startScale) * t;
+            transform.localScale = new Vector3(s, Mathf.Abs(s), Mathf.Abs(s));
+            yield return new WaitForEndOfFrame();
+        }
+
+        transform.localScale = new Vector3(targetScale, targetScale, targetScale);
+    }
 }

@@ -13,6 +13,7 @@ public static class Constants
     public const float CropHarvestTime = 0.1f;
     public const float ArtStandTime = 0.25f;
     public const float WinAnimTime = 0.5f;
+    public const float DeathAnimTime = 0.25f;
 
     public const int MinCardCount = 5;
     public const int MaxCardCount = 30;

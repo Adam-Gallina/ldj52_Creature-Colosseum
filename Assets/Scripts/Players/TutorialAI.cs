@@ -58,7 +58,7 @@ public class TutorialAI : PlayerController
         yield return new WaitForSeconds(0.25f);
         PlayCard(SpawnCard(voleCreature), Board.CreatureZones[playerLane]);
 
-        yield return ((TutorialGC)GameController.Instance).ShowText("Your Slug opposes your opponent's Vole, so it'll get attacked this turn. Luckily, its Surplus ability gave it enough health to take the attack");
+        yield return ((TutorialGC)GameController.Instance).ShowText("Your Snail opposes your opponent's Vole, so it'll get attacked this turn. Luckily, its Surplus ability gave it enough health to take the attack");
 
         GameController.Instance.EndTurn();
     }

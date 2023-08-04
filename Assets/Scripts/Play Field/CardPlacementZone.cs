@@ -35,6 +35,7 @@ public class CardPlacementZone : MonoBehaviour
                 scale = new Vector3(hoveredCardScale, hoveredCardScale, hoveredCardScale);
 
             c.transform.localScale = scale;
+            c.transform.localPosition = currOffset;
             currOffset += CardOffset;
         }
         foreach (Card c in QueuedCards)
@@ -44,6 +45,7 @@ public class CardPlacementZone : MonoBehaviour
                 scale = new Vector3(hoveredCardScale, hoveredCardScale, hoveredCardScale);
 
             c.transform.localScale = scale;
+            c.transform.localPosition = currOffset;
             currOffset += CardOffset;
         }
     }
@@ -91,12 +93,13 @@ public class CardPlacementZone : MonoBehaviour
     }
     public void PlayQueuedCards()
     {
-        for (int i = 0; i < QueuedCards.Count; i++)
+        for (int i = QueuedCards.Count; i > 0; i--)
         {
             Card c = QueuedCards[0];
-            QueuedCards.Remove(c);
             PlayedCards.Add(c);
+            QueuedCards.Remove(c);
         }
+        ArrangeCards();
     }
     public bool PlaceCard(Card c, PlayerNumber p)
     {
@@ -104,6 +107,8 @@ public class CardPlacementZone : MonoBehaviour
             return false;
 
         c.transform.SetParent(transform, false);
+        c.transform.localPosition = Vector3.zero;
+        c.transform.localRotation = Quaternion.identity;
 
         PlayedCards.Add(c);
         c.OnHover += HoverCard;

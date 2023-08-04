@@ -25,11 +25,6 @@ public class PlayerController : MonoBehaviour
 
     protected List<Card> queuedCards = new List<Card>();
 
-    private void Start()
-    {
-        DrawPileObj.SpawnCards(deck.Count);
-    }
-
     protected virtual void Update()
     {
         ArrangeHand();
@@ -62,6 +57,8 @@ public class PlayerController : MonoBehaviour
 
     public void ShuffleDeck()
     {
+        DrawPileObj.SpawnCards(deck.Count);
+
         for (int i = 0; i < deck.Count; i++)
         {
             Card temp = deck[i];
@@ -130,7 +127,7 @@ public class PlayerController : MonoBehaviour
                     g.gameObject.layer = Constants.DefaultLayer;
                 c.transform.localScale = cardScale;
                 c.transform.SetParent(hoveredZone.transform, false);
-                c.transform.localPosition = hoveredZone.PlayedCards.Count * hoveredZone.CardOffset;
+                c.transform.localPosition = (hoveredZone.PlayedCards.Count + hoveredZone.QueuedCards.Count) * hoveredZone.CardOffset;
                 c.transform.forward = hoveredZone.transform.forward;
                 continue;
             }

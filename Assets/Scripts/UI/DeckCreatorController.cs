@@ -185,6 +185,9 @@ class CardWindow
 
         foreach (Card c in Resources.LoadAll<Card>(path))
         {
+            if (!c.ShowInDeckBuilder)
+                continue;
+
             Card card = dc.GetCardButton(c);
             card.OnHover += HoverCard;
             card.OnClick += SelectCard;

@@ -20,6 +20,8 @@ public abstract class Card : MonoBehaviour
         }
     }
 
+    public bool ShowInDeckBuilder = true;
+
     [Header("Stats")]
     public CardType CardType;
     public string CardName;
@@ -58,6 +60,7 @@ public abstract class Card : MonoBehaviour
         CardUI.SetStrength(BaseStrength);
         CardUI.SetHealth(BaseHealth);
     }
+#if UNITY_EDITOR
     [MenuItem("Card Generation/Update Hunger Bar")]
     static void GenerateHungerBar()
     {
@@ -65,6 +68,7 @@ public abstract class Card : MonoBehaviour
         if (c)
             c.GetComponentInChildren<CardUI>().SetHunger(c.CropClassCost, true);
     }
+#endif
     protected virtual string GetDescription()
     {
         return "";
@@ -118,7 +122,7 @@ public abstract class Card : MonoBehaviour
 
     }
 
-    public virtual void CheckCrops(List<CropIcon> crops)
+    public List<CropIcon> CheckCrops(List<CropIcon> crops)
     {
         List<CropIcon> consuming = new List<CropIcon>();
         foreach (CropClass t in CropClassCost)
@@ -132,6 +136,12 @@ public abstract class Card : MonoBehaviour
                 }
             }
         }
+
+        return consuming;
+    }
+    public virtual void DoConsume(List<CropIcon> crops)
+    {
+        List<CropIcon> consuming = CheckCrops(crops);
 
         if (consuming.Count != CropClassCost.Length)
             return;
@@ -248,7 +258,10 @@ public abstract class Card : MonoBehaviour
         if (Health <= 0)
         {
             if (!ignoreDeath)
+            {
+
                 DestroyCard();
+            }
             return true;
         }
         return false;
@@ -261,6 +274,11 @@ public abstract class Card : MonoBehaviour
     public virtual void DestroyCard()
     {
         OnDeath?.Invoke(this);
+        CardUI.DeathAnim(0, Constants.DeathAnimTime);
+        Invoke(nameof(RemoveCard), Constants.DeathAnimTime);
+    }
+    private void RemoveCard()
+    {
         Destroy(gameObject);
     }
 

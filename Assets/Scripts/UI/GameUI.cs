@@ -10,7 +10,7 @@ public class GameUI : MonoBehaviour
     public static GameUI Instance;
 
     [SerializeField] private Button endTurnBtn;
-    [SerializeField] private Button undoBtn;
+    [SerializeField] public Button undoBtn;
 
     [SerializeField] private TMP_Text P1HealthText;
     [SerializeField] private TMP_Text P2HealthText;
@@ -34,6 +34,8 @@ public class GameUI : MonoBehaviour
             DeckLoader.Instance.PopulateDropdown(p1Deck, "P1's Deck");
         if (p2Deck)
             DeckLoader.Instance.PopulateDropdown(p2Deck, "P2's Deck");
+        else
+            GameController.Instance.GetPlayer(PlayerNumber.P2).deck = DeckLoader.Instance.GetPlayerDeck();
         startBtn.interactable = !(p1Deck || p2Deck);
     }
 
@@ -41,7 +43,7 @@ public class GameUI : MonoBehaviour
     {
         if (d == 0)
             return;
-        GameController.Instance.GetPlayer(PlayerNumber.P1).deck = new List<Card>(DeckLoader.Instance.Decks[d - 1].Cards.ToArray());
+        GameController.Instance.GetPlayer(PlayerNumber.P1).deck = DeckLoader.Instance.GetPlayerDeck(d - 1);
 
         if (p2Deck)
             startBtn.interactable = p2Deck.value != 0;
@@ -52,7 +54,7 @@ public class GameUI : MonoBehaviour
     {
         if (d == 0)
             return;
-        GameController.Instance.GetPlayer(PlayerNumber.P2).deck = new List<Card>(DeckLoader.Instance.Decks[d - 1].Cards.ToArray());
+        GameController.Instance.GetPlayer(PlayerNumber.P2).deck = DeckLoader.Instance.GetPlayerDeck(d - 1);
 
         startBtn.interactable = p1Deck.value != 0;
     }

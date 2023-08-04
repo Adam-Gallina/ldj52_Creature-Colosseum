@@ -99,7 +99,7 @@ public class PlayerBoard : MonoBehaviour
         {
             if (zone.PlayedCards.Count == 1)
             {
-                zone.PlayedCards[0].CheckCrops(cropSurplus);
+                zone.PlayedCards[0].DoConsume(cropSurplus);
             }
         }
 
@@ -118,14 +118,14 @@ public class PlayerBoard : MonoBehaviour
         {
             foreach (Card c in zone.PlayedCards)
             {
-                c.CheckCrops(cropSurplus);
+                c.DoConsume(cropSurplus);
             }
         }
         foreach (CardPlacementZone zone in CropZones)
         {
             foreach (Card c in zone.PlayedCards)
             {
-                c.CheckCrops(cropSurplus);
+                c.DoConsume(cropSurplus);
             }
         }
 

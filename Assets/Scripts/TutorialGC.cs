@@ -8,6 +8,8 @@ public class TutorialGC : GameController
     [SerializeField] private GameObject tutTextBkgd;
     [SerializeField] private TMP_Text tutText;
 
+    public GameObject CropHelp;
+
     protected override void Start()
     {
         base.Start();
@@ -17,6 +19,9 @@ public class TutorialGC : GameController
 
     protected override IEnumerator PreGameLoop()
     {
+        GetPlayer(PlayerNumber.P1).DrawPileObj.SpawnCards(GetPlayer(PlayerNumber.P1).deck.Count);
+        GetPlayer(PlayerNumber.P2).DrawPileObj.SpawnCards(GetPlayer(PlayerNumber.P2).deck.Count);
+
         GameUI.Instance.SetEndTurnBtn(false);
 
         yield return ShowText("Welcome to the game!");
@@ -26,17 +31,19 @@ public class TutorialGC : GameController
 
         CanPlayCards = true;
 
-        yield return ShowText("You drew a Creature card! You play Creatures on the middle row to attack your opponent. Go ahead and play it now!");
+        yield return ShowText("You drew a Creature card! You play Creatures on the middle row to attack your opponent. Go ahead and play it now! (You play cards on the left playing field)");
         yield return new WaitUntil(() => CreatureInLane(PlayerNumber.P1));
 
-        yield return ShowText("Your Slug will need something to eat, or it'll starve at the end of your turn. Select your Slug to see what it eats");
+        yield return ShowText("Your Snail will need something to eat, or it'll starve at the end of your turn. Select your Snail to see what it eats");
         yield return new WaitUntil(() => GameObject.Find("Card Inspector").transform.childCount == 1);
-        yield return ShowText("The symbols under a card's name tell you what kind of Crop it eats. Your Slug needs 1 vegetable every turn.\nThe number on the left of a card shows how much Damage a card can do.\nThe number on the right shows how much Health it has");
+        yield return ShowText("The symbols under a card's name tell you what kind of Crop it eats. Your Snail needs 1 vegetable every turn.\nThe number on the left of a card shows how much Damage a card can do.\nThe number on the right shows how much Health it has");
 
         yield return GetCurrPlayer().DrawCard(1);
 
         yield return ShowText("Crops generate food during the Harvest phase for your Creatures. Play your Vegetable on the back row.");
+        CropHelp.SetActive(true);
         yield return ShowText("You can play up to 3 Crops in one space");
+        CropHelp.SetActive(false);
         yield return new WaitUntil(() => CropInLane(PlayerNumber.P1));
 
         yield return ShowText("Looks like you're out of cards, click End Turn to enter your Harvest phase. Creature's don't attack on the first turn");
@@ -54,8 +61,8 @@ public class TutorialGC : GameController
         yield return ShowText("You drew another Vegetable, go ahead and play it");
         yield return new WaitUntil(() => PlacedCrops(PlayerNumber.P1, 2));
 
-        yield return ShowText("Your Slug has a 'Vegetable Surplus 1' ability. If you Harvest an extra Vegetable, the Slug can eat it and increase it's health by 1.");
-        yield return ShowText("Your opponent's Vole died, so your Slug can attack their Crop directly when you end your turn.");
+        yield return ShowText("Your Snail has a 'Vegetable Surplus 1' ability. If you Harvest an extra Vegetable, the Snail can eat it and increase it's health by 1.");
+        yield return ShowText("Your opponent's Vole died, so your Snail can attack their Crop directly when you end your turn.");
         yield return StartRound(PlayerNumber.P1, true, false);
 
         // AI Turn
@@ -66,8 +73,8 @@ public class TutorialGC : GameController
         CanPlayCards = true;
         yield return GetCurrPlayer().DrawCard(1);
 
-        yield return ShowText("You drew a Charm! Charms have single-use abilities, and are used before your attack. Play Charms in the middle row.");
-        yield return ShowText("This Charm will increase your Slug's stats for one turn, and allow it to kill your opponent's Vole.");
+        yield return ShowText("You drew a Charm! Charms have single-use abilities, and are used before your attack. Play Charms in the front row.");
+        yield return ShowText("This Charm will increase your Snail's stats for one turn, and allow it to kill your opponent's Vole.");
 
         int playerLane = -1;
         for (int i = 0; i < 4; i++)
@@ -81,12 +88,13 @@ public class TutorialGC : GameController
 
         if (!CharmInLane(PlayerNumber.P1, lane: playerLane))
         {
-            yield return ShowText("You don't have a Creature in that lane, so the Charm won't have any effect. Use the undo button to place it in front of your Slug.");
+            yield return ShowText("You don't have a Creature in that lane, so the Charm won't have any effect. Use the undo button to place it in front of your Snail.");
+            GameUI.Instance.undoBtn.interactable = true;
         }
 
         yield return new WaitUntil(() => CharmInLane(PlayerNumber.P1, lane: playerLane));
 
-        yield return ShowText("Charms consume Crops before Creatures, so have a free Vegetable to keep your Slug from starving.");
+        yield return ShowText("Charms consume Crops before Creatures, so have a free Vegetable to keep your Snail from starving. If you don't have enough Crops for a Charm, it'll get discarded");
         yield return GetCurrPlayer().DrawCard(1);
         yield return StartRound(CurrPlayer, true, false);
 
@@ -98,7 +106,7 @@ public class TutorialGC : GameController
         CanPlayCards = true;
         yield return GetCurrPlayer().DrawCard(1);
 
-        yield return ShowText("Your Slug is unopposed, so you can attack your opponent directly and win!");
+        yield return ShowText("Your Snail is unopposed, so you can attack your opponent directly and win!");
 
         yield return StartRound(CurrPlayer, true, false);
     }
